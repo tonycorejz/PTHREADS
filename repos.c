@@ -22,13 +22,17 @@ void* buy(void* arg) {
                       
             printf("pokupatel %d vzyal iz magazina %d maximum tovarov\n", *a, local);
             printf("pokupatel %d usnull\n", *a);
-            sleep (0.1);
+            sleep (1);
             printf("pokupatel %d prosnulsya\n", *a);
             pthread_exit (NULL);            
             return NULL;
         }else{
             if(repository[local]<=0)pthread_mutex_unlock(&mutex); //если условие не выполнено из-за того, что маган не имеет товара, то mutex все-равно заблокирует магазин, следовательно это освобождает магазин (mutex)
-           if(local==4){local=0;} else local++; //идем в следующий магазин закупаться
+           if(local==4){
+                local=0;
+                pthread_exit (NULL);            
+                return NULL;
+            } else local++; //идем в следующий магазин закупаться
            
         }
     }
@@ -47,12 +51,16 @@ void* add(void *args) { //эта функция добавляет к товар
             printf("v magazine %d seichas %d tovarov\n", local, repository[local]);
             pthread_mutex_unlock(&mutex);   //разблокирует магазин                
             printf("pogruzchik zasnull\n");
-            sleep (0.2);
+            sleep (2);
             printf("pogruzchik prosnulsya\n");
             pthread_exit (NULL);            
             return NULL;
         }else{ //если магазин занят, то погрузчик идет на другой
-            if(local==4)local=0; else local++;
+            if(local==4){
+                local=0;
+                pthread_exit (NULL);            
+                return NULL;
+            } else local++;
         }
     }
     pthread_mutex_unlock(&mutex);
